@@ -29,6 +29,8 @@ Hey, Netology
 - Соберите и отправьте созданный образ в свой dockerhub-репозитории c tag 1.0.0 (ТОЛЬКО ЕСЛИ ЕСТЬ ДОСТУП). 
 - Предоставьте ответ в виде ссылки на https://hub.docker.com/<username_repo>/custom-nginx/general .
 
+- https://hub.docker.com/repository/docker/craaazy40/custom-nginx/image-management
+
 ## Задача 2
 1. Запустите ваш образ custom-nginx:1.0.0 командой docker run в соответвии с требованиями:
 - имя контейнера "ФИО-custom-nginx-t2"
@@ -39,6 +41,10 @@ Hey, Netology
 4. Убедитесь с помощью curl или веб браузера, что индекс-страница доступна.
 
 В качестве ответа приложите скриншоты консоли, где видно все введенные команды и их вывод.
+
+
+<img width="732" height="480" alt="2026-06-02_08-25-08" src="https://github.com/user-attachments/assets/09aa3755-4965-4a46-b333-f1cbeb359026" />
+
 
 
 ## Задача 3
@@ -57,6 +63,13 @@ Hey, Netology
 
 В качестве ответа приложите скриншоты консоли, где видно все введенные команды и их вывод.
 
+
+<img width="720" height="364" alt="2026-06-02_08-44-03" src="https://github.com/user-attachments/assets/2b11bc84-f25a-4ed4-b94e-a8f05d866f5a" />
+<img width="740" height="224" alt="2026-06-02_08-45-14" src="https://github.com/user-attachments/assets/9216f95d-4d92-41f4-8c88-2dfb00df8c30" />
+
+
+
+
 ## Задача 4
 
 
@@ -68,6 +81,9 @@ Hey, Netology
 
 
 В качестве ответа приложите скриншоты консоли, где видно все введенные команды и их вывод.
+
+<img width="736" height="306" alt="2026-06-02_10-02-03" src="https://github.com/user-attachments/assets/f47385e6-244c-4a25-8bce-1c08fc2225d7" />
+
 
 
 ## Задача 5
@@ -95,7 +111,7 @@ services:
 ```
 
 И выполните команду "docker compose up -d". Какой из файлов был запущен и почему? (подсказка: https://docs.docker.com/compose/compose-application-model/#the-compose-file )
-
+Потому что последовательность выбора файлов ищет сначала файл compose.yaml, а уже потом docker-compose.yaml
 2. Отредактируйте файл compose.yaml так, чтобы были запущенны оба файла. (подсказка: https://docs.docker.com/compose/compose-file/14-include/)
 
 3. Выполните в консоли вашей хостовой ОС необходимые команды чтобы залить образ custom-nginx как custom-nginx:latest в запущенное вами, локальное registry. Дополнительная документация: https://distribution.github.io/distribution/about/deploying/
@@ -116,6 +132,12 @@ services:
 7. Удалите любой из манифестов компоуза(например compose.yaml).  Выполните команду "docker compose up -d". Прочитайте warning, объясните суть предупреждения и выполните предложенное действие. Погасите compose-проект ОДНОЙ(обязательно!!) командой.
 
 В качестве ответа приложите скриншоты консоли, где видно все введенные команды и их вывод, файл compose.yaml , скриншот portainer c задеплоенным компоузом.
+
+<img width="856" height="752" alt="2026-06-02_10-16-25" src="https://github.com/user-attachments/assets/6a7b9ecf-54e0-4bbe-95b6-30b8821a6ed2" />
+<img width="875" height="806" alt="2026-06-02_10-16-42" src="https://github.com/user-attachments/assets/4e88cf6a-6403-4222-8a21-d6ca07e33b41" />
+<img width="975" height="384" alt="2026-06-02_10-26-10" src="https://github.com/user-attachments/assets/f2e2df17-6517-4c81-ac4d-3f10ba6b1e87" />
+
+
 
 ---
 
