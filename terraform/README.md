@@ -10,7 +10,8 @@
 ### Чек-лист готовности к домашнему заданию
 
 1. Скачайте и установите **Terraform** версии >=1.12.0 . Приложите скриншот вывода команды ```terraform --version```.
-<img width="708" height="80" alt="tversion" src="https://github.com/user-attachments/assets/27955df6-6355-437d-b09b-0b57804ee7a5" />
+<img width="644" height="116" alt="2026-06-22_14-34-04" src="https://github.com/user-attachments/assets/01c08fc6-e557-4f65-97f0-1ac396dd4a4a" />
+
 
 2. Скачайте на свой ПК этот git-репозиторий. Исходный код для выполнения задания расположен в директории **01/src**.
 3. Убедитесь, что в вашей ОС установлен docker.
