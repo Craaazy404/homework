@@ -37,9 +37,12 @@
 В качестве решения приложите:
 
 - скриншот ЛК Yandex Cloud с созданной ВМ, где видно внешний ip-адрес;
-
+<img width="1836" height="128" alt="ycscr" src="https://github.com/user-attachments/assets/4bb615dd-6e92-4e2d-b0d0-d72956176cf5" />
 - скриншот консоли, curl должен отобразить тот же внешний ip-адрес;
+- <img width="504" height="132" alt="ip" src="https://github.com/user-attachments/assets/50a1b924-f0c9-4236-a89b-ed43a2601343" />
 - ответы на вопросы.
+  preemptible = true — ВМ может быть остановлена в любой момент, используется для экономии, подходит для неответственных задач, core_fraction=5 — гарантированная доля vCPU (5%), позволяет экономить при низкой нагрузке.
+
 
 
 ### Задание 2
@@ -62,6 +65,8 @@
 2. Примените изменения.
 
 В качестве решения приложите вывод значений ip-адресов команды ```terraform output```.
+<img width="1808" height="184" alt="2026-06-23_10-34-43" src="https://github.com/user-attachments/assets/4a434c4f-17c5-4f54-b7e6-eb2eb344d31c" />
+<img width="520" height="256" alt="2026-06-23_10-34-59" src="https://github.com/user-attachments/assets/9c8975e3-7d4c-4a01-947d-01388e58f147" />
 
 
 ### Задание 5
@@ -106,5 +111,6 @@
   
 5. Найдите и закоментируйте все, более не используемые переменные проекта.
 6. Проверьте terraform plan. Изменений быть не должно.
+<img width="1228" height="264" alt="2026-06-23_10-44-26" src="https://github.com/user-attachments/assets/f4ad5c43-f42e-467d-8d10-fb136f783bb5" />
 
 ------
