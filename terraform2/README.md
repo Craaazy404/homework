@@ -112,5 +112,252 @@
 5. Найдите и закоментируйте все, более не используемые переменные проекта.
 6. Проверьте terraform plan. Изменений быть не должно.
 <img width="1228" height="264" alt="2026-06-23_10-44-26" src="https://github.com/user-attachments/assets/f4ad5c43-f42e-467d-8d10-fb136f783bb5" />
+ДОБАВЛЯЮ КОД ДЛЯ СДАЧИ ЗАДАНИЯ.
+**providers.tf**
+terraform {
+  required_providers {
+    yandex = {
+      source = "yandex-cloud/yandex"
+    }
+  }
+  required_version = "~>1.12.0"
+}
 
+provider "yandex" {
+  cloud_id                 = var.cloud_id
+  folder_id                = var.folder_id
+  zone                     = var.default_zone
+  service_account_key_file = var.service_account_key_file
+}
+
+**variables.tf**
+##cloud vars
+
+variable "cloud_id" {
+  type        = string
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/cloud/get-id"
+}
+
+variable "folder_id" {
+  type        = string
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/folder/get-id"
+}
+
+variable "default_zone" {
+  type        = string
+  default     = "ru-central1-a"
+  description = "https://cloud.yandex.ru/docs/overview/concepts/geo-scope"
+}
+
+variable "default_cidr" {
+  type        = list(string)
+  default     = ["10.0.1.0/24"]
+  description = "https://cloud.yandex.ru/docs/vpc/operations/subnet-create"
+}
+
+variable "vpc_name" {
+  type        = string
+  default     = "develop"
+  description = "VPC network & subnet name"
+}
+
+##ssh vars
+
+variable "vms_ssh_root_key" {
+  type        = string
+  default     = "<your_ssh_ed25519_key>"
+  description = "ssh-keygen -t ed25519"
+}
+
+variable "service_account_key_file" {
+  type        = string
+  description = "Path to the service account key file in JSON format"
+}
+
+## map variables for resources
+
+variable "vms_resources" {
+  type = map(object({
+    cores         = number
+    memory        = number
+    core_fraction = number
+    disk_size     = number
+    disk_type     = string
+  }))
+  default = {
+    web = {
+      cores         = 2
+      memory        = 1
+      core_fraction = 5
+      disk_size     = 5   # оставлено 5, чтобы не пересоздавать web-ВМ
+      disk_type     = "network-hdd"
+    }
+    db = {
+      cores         = 2
+      memory        = 2
+      core_fraction = 20
+      disk_size     = 10
+      disk_type     = "network-hdd"
+    }
+  }
+}
+
+
+**vms_platform.tf**
+## VM web variables
+
+variable "vm_web_name" {
+  type        = string
+  default     = "netology-develop-platform-web"
+  description = "VM name for web"
+}
+
+variable "vm_web_platform_id" {
+  type        = string
+  default     = "standard-v2"
+  description = "Platform ID for web VM"
+}
+
+## VM db variables
+
+variable "vm_db_name" {
+  type        = string
+  default     = "netology-develop-platform-db"
+  description = "VM name for db"
+}
+
+variable "vm_db_platform_id" {
+  type        = string
+  default     = "standard-v2"
+  description = "Platform ID for db VM"
+}
+
+**locals.tf**
+locals {
+  vm_names = {
+    web = var.vm_web_name
+    db  = var.vm_db_name
+  }
+
+  metadata = {
+    serial-port-enable = "1"
+    ssh-keys           = "ubuntu:${var.vms_ssh_root_key}"
+  }
+}
+
+**main.tf**
+# ===== СЕТЬ И ПОДСЕТИ =====
+
+resource "yandex_vpc_network" "develop" {
+  name = var.vpc_name
+}
+
+resource "yandex_vpc_subnet" "develop" {
+  name           = var.vpc_name
+  zone           = var.default_zone
+  network_id     = yandex_vpc_network.develop.id
+  v4_cidr_blocks = var.default_cidr
+}
+
+resource "yandex_vpc_subnet" "develop-b" {
+  name           = "develop-b"
+  zone           = "ru-central1-b"
+  network_id     = yandex_vpc_network.develop.id
+  v4_cidr_blocks = ["10.0.2.0/24"]
+}
+
+# ===== ОБРАЗ =====
+
+data "yandex_compute_image" "ubuntu" {
+  family = "ubuntu-2004-lts"
+}
+
+# ===== ВЕБ-ВМ (web) =====
+
+resource "yandex_compute_instance" "platform" {
+  name        = local.vm_names.web
+  platform_id = var.vm_web_platform_id
+  zone        = var.default_zone
+
+  resources {
+    cores         = var.vms_resources["web"].cores
+    memory        = var.vms_resources["web"].memory
+    core_fraction = var.vms_resources["web"].core_fraction
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = data.yandex_compute_image.ubuntu.image_id
+      size     = var.vms_resources["web"].disk_size
+      type     = var.vms_resources["web"].disk_type
+    }
+  }
+
+  scheduling_policy {
+    preemptible = true
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.develop.id
+    nat       = true
+  }
+
+  metadata = local.metadata
+}
+
+# ===== БАЗА ДАННЫХ (db) =====
+
+resource "yandex_compute_instance" "db" {
+  name        = local.vm_names.db
+  platform_id = var.vm_db_platform_id
+  zone        = "ru-central1-b"
+
+  resources {
+    cores         = var.vms_resources["db"].cores
+    memory        = var.vms_resources["db"].memory
+    core_fraction = var.vms_resources["db"].core_fraction
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = data.yandex_compute_image.ubuntu.image_id
+      size     = var.vms_resources["db"].disk_size
+      type     = var.vms_resources["db"].disk_type
+    }
+  }
+
+  scheduling_policy {
+    preemptible = true
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.develop-b.id
+    nat       = true
+  }
+
+  metadata = local.metadata
+}
+
+**outputs.tf**
+output "vms_info" {
+  value = {
+    web = {
+      instance_name = yandex_compute_instance.platform.name
+      external_ip   = yandex_compute_instance.platform.network_interface.0.nat_ip_address
+      fqdn          = yandex_compute_instance.platform.fqdn
+    }
+    db = {
+      instance_name = yandex_compute_instance.db.name
+      external_ip   = yandex_compute_instance.db.network_interface.0.nat_ip_address
+      fqdn          = yandex_compute_instance.db.fqdn
+    }
+  }
+}
+
+**terraform.tfvars**
+cloud_id                 = "b******************a"
+folder_id                = "b******************e"
+service_account_key_file = "key.json"
+vms_ssh_root_key         = "ssh-ed25519 ************************************************** user@123"
+default_zone             = "ru-central1-a"
 ------
